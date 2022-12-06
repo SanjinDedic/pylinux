@@ -16,11 +16,11 @@ with open("passwords.txt", "r") as f: #You can use rb for binary to get bytes in
 
 if filetype in office_types:
     with open(sys.argv[1], "rb") as f:
-            for one_pass in all_passwords:
+            for this_pass in all_passwords:
                 try:
                     file = msoffcrypto.OfficeFile(f)
-                    file.load_key(password=one_pass,verify_password=True)  # Use password                   
-                    print("File Opened successfully with "+one_pass)
+                    file.load_key(password=this_pass,verify_password=True)  # Use password                   
+                    print("File Opened successfully with "+this_pass)
                     break
                 except:
                     print("Incorrect Password")
