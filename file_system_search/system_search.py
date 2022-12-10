@@ -7,20 +7,32 @@ from PyPDF2 import PdfFileReader
 from openpyxl import load_workbook
 from pptx import Presentation
 from docx import Document
+import argparse
 
+#parser = argparse.ArgumentParser()
+#parser.add_argument('-path', '--source_path', help="Takes the directory path in quotes as input")
+#parser.add_argument('-t', '--text_pattern', help="Takes the text pattern as input")
 
-directory = r"{}".format(sys.argv[1])
-text = sys.argv[2]
+#rgs = parser.parse_args()
+
+directory = sys.argv[1]#args.source_path
+text = sys.argv[2]+".+}"#args.text_pattern+".+}" #Has the text with one or more characters and ends with }
 
 
 for root, dirs, files in os.walk(directory):
     for file in files:
         if file.endswith(".txt"):
             file_path=os.path.join(root, file)
+            data=''
             with open(file_path, 'r') as f:
-                print(re.findall(text,f.read()))
-                break
-        
+                data+=f.read()
+                result=re.findall(text,data)
+                if not result:
+                    continue
+                else:
+                    print(result[0])
+                    break    
+            
         if file.endswith(".pdf"):
             file_path=os.path.join(root, file)
             with open(file_path, 'rb') as f:
@@ -29,19 +41,28 @@ for root, dirs, files in os.walk(directory):
                 for i in range(pdf_file.numPages):
                     page = pdf_file.getPage(i)
                     data += page.extractText()
-                print(re.findall(text,data))
-                break
+                result=re.findall(text,data)
+                if not result:
+                    continue
+                else:
+                    print(result[0])
+                    break 
                 
         if file.endswith(".xlsx"):
             file_path=os.path.join(root, file)
             data=''
             wb = load_workbook(file_path)
-            all_rows = list(wb.rows)
-
-            for cell in all_rows[0]:
-                data+=cell.value
-            print(re.findall(text,data))
-            break         
+            ws = wb.active
+            for row in ws:
+                for cell in row:
+                    if cell.value is not None:
+                        data+=str(cell.value)
+            result=re.findall(text,data)
+            if not result:
+                    continue
+            else:
+                print(result[0])
+                break         
 
         if file.endswith(".pptx"):
             file_path=os.path.join(root, file)
@@ -52,8 +73,12 @@ for root, dirs, files in os.walk(directory):
                     for shape in slide.shapes:
                         if hasattr(shape, "text"):
                             data=shape.text
-                print(re.findall(text,data))
-                break
+                result=re.findall(text,data)
+                if not result:
+                    continue
+                else:
+                    print(result[0])
+                    break 
         
         if file.endswith(".docx"):
             file_path=os.path.join(root, file)
@@ -63,5 +88,9 @@ for root, dirs, files in os.walk(directory):
                 data=''
                 for para in doc.paragraphs:
                     data += '\n'+ para.text
-                print(re.findall(text,data))
-                break
+                result=re.findall(text,data)
+                if not result:
+                    continue
+                else:
+                    print(result[0])
+                    break 
