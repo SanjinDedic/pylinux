@@ -2,25 +2,40 @@
 #It searches for a string within popular document types: office, pdf, archives
 #It can also search via built in linux commands like find
 
-import sys,os,re
+import os,re
 from PyPDF2 import PdfFileReader
 from openpyxl import load_workbook
 from pptx import Presentation
 from docx import Document
 import argparse
+from pyunpack import Archive
+import shutil
 
-#parser = argparse.ArgumentParser()
-#parser.add_argument('-path', '--source_path', help="Takes the directory path in quotes as input")
-#parser.add_argument('-t', '--text_pattern', help="Takes the text pattern as input")
+parser = argparse.ArgumentParser()
+parser.add_argument('-path', '--source_path', help="Takes the directory path in quotes as input")
+parser.add_argument('-text', '--text_pattern', help="Takes the text pattern as input")
 
-#rgs = parser.parse_args()
+args = parser.parse_args()
 
-directory = sys.argv[1]#args.source_path
-text = sys.argv[2]+".+}"#args.text_pattern+".+}" #Has the text with one or more characters and ends with }
+directory = args.source_path
+text = args.text_pattern+".+}" #Has the text with one or more characters and ends with }
+
+for root, dirs, files in os.walk(directory):
+    for file in files:
+        if file.endswith(".zip"):
+            out_zip=os.path.join(root, "extracted_zip")
+            Archive(file).extractall(out_zip,auto_create_dir=True)
+            break
+
+        if file.endswith(".rar"):
+            out_rar=os.path.join(root, "extracted_rar")
+            Archive(file).extractall(out_rar,auto_create_dir=True)
+            break
 
 
 for root, dirs, files in os.walk(directory):
     for file in files:
+        
         if file.endswith(".txt"):
             file_path=os.path.join(root, file)
             data=''
@@ -94,3 +109,9 @@ for root, dirs, files in os.walk(directory):
                 else:
                     print(result[0])
                     break 
+
+if 'out_zip' in locals():
+    shutil.rmtree(out_zip)
+
+if 'out_rar' in locals():
+    shutil.rmtree(out_rar)
