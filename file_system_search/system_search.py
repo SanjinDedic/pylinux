@@ -11,15 +11,18 @@ import argparse
 from pyunpack import Archive
 import shutil
 
+#Setting up arguments for command line
 parser = argparse.ArgumentParser()
 parser.add_argument('-path', '--source_path', help="Takes the directory path in quotes as input")
 parser.add_argument('-text', '--text_pattern', help="Takes the text pattern as input")
 
 args = parser.parse_args()
 
+#Assigning variables and adding regular expression for the text
 directory = args.source_path
 text = args.text_pattern+".+}" #Has the text with one or more characters and ends with }
 
+#Going through each file in the directory to unpack
 for root, dirs, files in os.walk(directory):
     for file in files:
         if file.endswith(".zip"):
@@ -32,7 +35,7 @@ for root, dirs, files in os.walk(directory):
             Archive(file).extractall(out_rar,auto_create_dir=True)
             break
 
-
+#Going through each files (unpacked files are included) and finding the text
 for root, dirs, files in os.walk(directory):
     for file in files:
         
@@ -110,6 +113,7 @@ for root, dirs, files in os.walk(directory):
                     print(result[0])
                     break 
 
+#Removing unpacked folders
 if 'out_zip' in locals():
     shutil.rmtree(out_zip)
 
