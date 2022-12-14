@@ -1,4 +1,5 @@
 #works for all file types (pdf docx xlxs pptx rar zip)https://github.com/Sanjin84/pylinux
+#if password list not given, the script will ask if you want to download and use rockyou.txt
 from PyPDF2 import PdfFileReader
 import msoffcrypto
 import argparse
