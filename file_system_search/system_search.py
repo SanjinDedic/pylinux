@@ -113,8 +113,9 @@ for root, dirs, files in os.walk(directory):
                     break 
 
 #Removing unpacked folders
-if 'out_zip' in locals():
-    shutil.rmtree(out_zip)
 
-if 'out_rar' in locals():
-    shutil.rmtree(out_rar)
+if 'out_zip' in locals() or 'out_rar' in locals():
+    ans = input('Do you want to remove all the files that were extracted from compressed directories?   y/n?')
+    if ans.lower() =='y':
+        shutil.rmtree(out_zip)
+        shutil.rmtree(out_rar)
