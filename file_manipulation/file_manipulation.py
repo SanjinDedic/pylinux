@@ -1,15 +1,11 @@
-import os, shutil
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('-create', '--create_file', help="Creates a file in current directory")
-parser.add_argument('-delete', '--delete_file', help="Deletes a file in current directory")
-parser.add_argument('-move', '--move_file', help="Moves a file from given path to current directory")
+import sys, os, shutil
 
-args = parser.parse_args()
 
-if args.create_file:
-	open(args.create_file, mode='x')
-if args.delete_file:
-        os.remove(args.delete_file)
-if args.move_file:
-        shutil.move(os.getcwd()+'/'+sys.argv[1], args.move_file)
+if sys.argv[2] == '-create':
+	open(sys.argv[1], mode='x')
+if sys.argv[2] == '-delete':
+        os.remove(sys.argv[1])
+if sys.argv[2] == '-move':
+        shutil.move(os.getcwd()+'/'+sys.argv[1], sys.argv[3])
+if sys.argv[2] == '-help':
+        print('HELP INSTRUCTIONS TO FOLLOW')
