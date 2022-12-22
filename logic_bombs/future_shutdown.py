@@ -6,9 +6,8 @@ import time
 
 def job():
     os.system("shutdown /s /t 1")
-    return schedule.CancelJob
 
-schedule.every(1).hours.until("2022-12-21 3:10").do(job)
+schedule.every(1).second.until("2022-12-21 3:16:00").do(job)
 while 1:
     schedule.run_pending()
     time.sleep(1)
