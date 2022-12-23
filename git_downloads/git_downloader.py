@@ -17,12 +17,23 @@ def main():
         url = url.replace("/blob","")
         url = url.replace("github.com","raw.githubusercontent.com")
         file_name = url.split('/')[-1]
-        urllib.request.urlretrieve(url, file_name)
-        print("File downloaded")
+        # Stops program from passing error if the link is invalid
+        try:
+            urllib.request.urlretrieve(url, file_name)
+            print("File Download: Success!")
+        except ValueError:
+            print("ERROR: Invalid file link")
+            print("File Download: Failed.")
+       
 
     if args.download_github_folder:
-        os.system('gitdir '+args.download_github_folder)
-        print("Folder downloaded")
+        # Stops program from passing error if the link is invalid
+        try:
+            os.system('gitdir '+args.download_github_folder)
+            print("Folder Download: Success!")
+        except ValueError:
+            print("ERROR: Invalid Repository Link")
+            print("Folder Download: Failed.")
 
 if __name__=="__main__":
     main()
