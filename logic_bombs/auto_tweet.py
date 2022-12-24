@@ -6,10 +6,10 @@ import time
 from datetime import datetime, timedelta
 
 # Replace these with your own Twitter API credentials
-api_key = "AECmDmtQfqPfNMv81D0isbA2K"
-api_secret = "14QOgZHCGojVvxz5G1erkusNRIODdBmI8zjC3mIXpYDCgzUxAz"
-access_token = "255962528-fL707Q4XJIVipUG0h6T7tfVFPVFMtXaEDpqunUDD"
-access_token_secret = "YkpPFbCP4TltyhAwzJZjTnugw0Bj2vcdPeeZLB6neRSfo"
+api_key = "A%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+api_secret = "14QOgZHCGojVvxz5%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+access_token = "25596252%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+access_token_secret = "YkpPFbCP4T%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 
 # Authenticate with the Twitter API using your API credentials
 auth = tweepy.OAuth1UserHandler(api_key, api_secret, access_token, access_token_secret)
