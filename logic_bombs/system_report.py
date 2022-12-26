@@ -1,35 +1,25 @@
 #print out temperature / disk usage / cool stuff every 30 seconds
-#import psutil
-#v =psutil.cpu_percent(interval=1)
-#psutil.cpu_count()
-#psutil.disk_usage('/')
-#t=psutil.sensors_temperatures()
-#print(t)
 
+#print(t)
+import platform
 import schedule
 import time
-from pyspectator.computer import Computer
-from pyspectator.processor import Cpu
-from pyspectator.network import NetworkInterface
-from pyspectator.memory import AbsMemory
-
+import psutil as pt
+#check for wifi
 
 def job():
-    computer = Computer()
-    cpu = Cpu(monitoring_latency=1)
-    network = NetworkInterface(monitoring_latency=1)
-    #memory = AbsMemory()
-
-    print(computer.os)
-    print(computer.hostname)
-    print(cpu.name)
-    print(cpu.count)
-    print(cpu.load)
-    #print(cpu.temperature)
     
-    print(network.ip_address)
-    #print(memory.available)
-    #print(memory.used)
+
+    print("Computer Operating System: {user}".format(user=platform.node()))
+    print("Computer User: {user}".format(user=pt.users()[0][0]))
+    print("Processor cores: {cores}".format(cores=pt.cpu_count()))
+    print("Processor Load:  {load}%".format(load=pt.cpu_percent()))
+    print("Computer RAM: {ram1:.2f} GB".format(ram1=(pt.virtual_memory()[0]/(1024**3))))
+    print("Computer RAM used: {ram2:.2f} GB".format(ram2=(pt.virtual_memory()[1]/(1024**3))))
+    print("Computer Total Storage: {disk1:.2f} GB".format(disk1=(pt.disk_usage('C:\\')[0]/(1024**3))))
+    print("Computer Storage used: {disk2:.2f} GB".format(disk2=(pt.disk_usage('C:\\')[1]/(1024**3))))
+    print("Computer local network IP: {net} C".format(net=pt.net_if_addrs()["Wi-Fi"]))
+    
     
 
 #schedule.every(1).minutes.do(job)
