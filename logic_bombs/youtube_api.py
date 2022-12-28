@@ -16,17 +16,17 @@ auth = tweepy.OAuth1UserHandler(api_key, api_secret, access_token, access_token_
 api = tweepy.API(auth)
 
 # Set the time when the tweet should be sent
-tweet_time = datetime(year=2022, month=12, day=24, hour=13, minute=38, second=0)
+tweet_time = datetime(year=2022, month=12, day=26, hour=18, minute=10, second=0)
 
 channelsSearch = ChannelsSearch('Sanjin Dedic', limit = 1, region = 'US')
 id=channelsSearch.result()['result'][0]["id"] 
 
 playlist = Playlist(playlist_from_channel_id(id))
-print(playlist)
+#print(playlist)
 pl=playlist.info["info"]["link"]
-print(pl)
+#print(pl)
 videos=Playlist.getVideos(pl)
-print(videos)
+#print(videos)
 ch=random.randint(0,9)
 vid_link = videos["videos"][ch]["link"]
 skinny_link = vid_link.split('&list')[0]
@@ -39,7 +39,7 @@ Take a look at my GitHub code here:{}
 
 {}
 '''.format(github_link, skinny_link)
-'''
+
 while True:
     # Check the current time
     current_time = datetime.now()
@@ -54,4 +54,3 @@ while True:
     # Sleep for 1 minute before checking the time again
     time.sleep(60)
 
-'''

@@ -3,13 +3,18 @@ from youtubesearchpython import *
 import random
 import tweepy
 import time
+import os
 from datetime import datetime, timedelta
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Replace these with your own Twitter API credentials
-api_key = "A%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-api_secret = "14QOgZHCGojVvxz5%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-access_token = "25596252%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-access_token_secret = "YkpPFbCP4T%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+api_key = os.getenv("api_key")
+api_secret = os.getenv("api_secret")
+access_token = os.getenv("access_token")
+access_token_secret = os.getenv("access_token_secret")
 
 # Authenticate with the Twitter API using your API credentials
 auth = tweepy.OAuth1UserHandler(api_key, api_secret, access_token, access_token_secret)

@@ -5,8 +5,10 @@
 #Only windows
 import subprocess
 from sys import platform
+import os
 
 if platform == "linux" or platform == "linux2":
-    subprocess.Popen(["lynis","audit","system"], shell=True, stdout=subprocess.PIPE)
+    #os.system("chkrootkit")
+    subprocess.Popen(["chkrootkit"], shell=True, stdout=subprocess.PIPE)
 elif platform == "win32":
     print(subprocess.Popen(["C:\Program Files\Windows Defender\MpCmdRun.exe","-Scan","-Scan Type","1"], shell=True, stdout=subprocess.PIPE).stdout.read())

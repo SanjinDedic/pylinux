@@ -21,11 +21,8 @@ def job():
     print("Computer local network IP: {net} C".format(net=pt.net_if_addrs()["Wi-Fi"]))
     
     
-
-#schedule.every(1).minutes.do(job)
 schedule.every(1).seconds.do(job)
-#schedule.every().hour.do(job)
-#schedule.every().day.at("10:30").do(job)
+
 
 while 1:
     schedule.run_pending()

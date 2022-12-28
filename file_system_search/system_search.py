@@ -9,6 +9,8 @@ from docx import Document
 import argparse
 from pyunpack import Archive
 import shutil
+import time
+startTime = time.time()
 
 #Setting up arguments for command line
 parser = argparse.ArgumentParser()
@@ -117,5 +119,8 @@ for root, dirs, files in os.walk(directory):
 if 'out_zip' in locals() or 'out_rar' in locals():
     ans = input('Do you want to remove all the files that were extracted from compressed directories?   y/n?')
     if ans.lower() =='y':
-        shutil.rmtree(out_zip)
+        #shutil.rmtree(out_zip)
         shutil.rmtree(out_rar)
+
+executionTime = (time.time() - startTime)
+print('Execution time in seconds: ' + str(executionTime))
