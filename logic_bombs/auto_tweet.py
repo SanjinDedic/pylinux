@@ -1,14 +1,13 @@
-#go to a channel get a video url for a random pick of the last 10 videos given a channel
 from youtubesearchpython import *
 import random
 import tweepy
 import time
 import os
+import re
 from datetime import datetime, timedelta
-
 from dotenv import load_dotenv
-
 load_dotenv()
+
 
 # Replace these with your own Twitter API credentials
 api_key = os.getenv("api_key")

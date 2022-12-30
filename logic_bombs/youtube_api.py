@@ -16,7 +16,7 @@ auth = tweepy.OAuth1UserHandler(api_key, api_secret, access_token, access_token_
 api = tweepy.API(auth)
 
 # Set the time when the tweet should be sent
-tweet_time = datetime(year=2022, month=12, day=26, hour=18, minute=10, second=0)
+tweet_time = datetime(year=2022, month=12, day=30, hour=9, minute=0, second=0)
 
 channelsSearch = ChannelsSearch('Sanjin Dedic', limit = 1, region = 'US')
 id=channelsSearch.result()['result'][0]["id"] 
@@ -33,10 +33,9 @@ skinny_link = vid_link.split('&list')[0]
 
 
 github_link = 'https://github.com/Sanjin84/pylinux/blob/main/logic_bombs/auto_tweet.py'
-my_tweet = ''' Hi I am Sanjin's bot and I am alive! Below is my random video selection for today from Sanjin's channel:
+my_tweet = ''' Sanjin's Bot here wishing you a happy Friday morning with a recent video from my master's channel: {}
 
-Take a look at my GitHub code here:{}
-
+Help me grow and improve, take a look at my code and suggest improvements:{}
 {}
 '''.format(github_link, skinny_link)
 
@@ -49,7 +48,7 @@ while True:
         print(my_tweet)
         api.update_status(my_tweet)
         # Set the tweet time to the next day at 8AM
-        tweet_time = tweet_time + timedelta(days=1)
+        tweet_time = tweet_time + timedelta(days=7)
         print('I just tweeted')
     # Sleep for 1 minute before checking the time again
     time.sleep(60)
