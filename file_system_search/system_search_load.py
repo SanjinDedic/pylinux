@@ -10,29 +10,24 @@ import argparse
 from pyunpack import Archive
 import time
 import datetime
+import shutil
 
 startTime = time.time()
-counter=0
-totalsize=0
-counter_txt=0
-counter_pdf=0
-counter_docx=0
-counter_xlsx=0
-counter_pptx=0
+counter,totalsize,counter_txt,counter_pdf,counter_docx,counter_xlsx,counter_pptx,counter_otherfiles=0,0,0,0,0,0,0,0
 final=list()
-
+out_zip=''
 
 #Setting up arguments for command line
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(prog="system_search_load.py")
 parser.add_argument('-path', '--source_path', help="Takes the directory path in quotes as input")
 parser.add_argument('-text', '--text_pattern', help="Takes the text pattern as input")
-#parser.add_argument('-save', '--save_log', help="Saves a log file in a folder")
+parser.add_argument('-save', '--save_log',action="store_true", help="Saves a log file in a folder")
 
 args = parser.parse_args()
 
 #Assigning variables and adding regular expression for the text
 directory = args.source_path
-text = args.text_pattern+".+}" #Has the text with one or more characters and ends with }
+text = args.text_pattern+".+" #Has the text with one or more characters and ends with }
 
 
 def logsize(root,file):
@@ -41,24 +36,29 @@ def logsize(root,file):
     totalsize+=size
     return "{f} | {size} | Bytes".format(f=file,size=size)
     
+def other(file):
+    global counter_otherfiles
+    counter_otherfiles+=1
 
-def progress(percent=0, width=30):
-    left = width * percent // 1000
+
+def progress(percent=0,total=0, width=50):
+    left = width * percent // total
     right = width - left
     
     tags = "#" * left
     spaces = " " * right
-    percents = f"{percent:.0f} files done"
+    percents = f"{(percent/2015)*100:.0f}% done | {percent} files done"
     
     print("\r[", tags, spaces, "]", percents, sep="", end="", flush=True)
 # Example run
 
 def extract(root,file):
+    global out_zip
     out_zip=os.path.join(root, "extracted")
     file_path=os.path.join(root, file)
     Archive(file_path).extractall(out_zip,auto_create_dir=True)
 
-def check(root,file):
+def check(root,file,total_files):
     global counter,counter_txt,counter_pdf,counter_docx,counter_xlsx,counter_pptx
     
    
@@ -125,38 +125,40 @@ def check(root,file):
             final.append(result[0]+" in file "+file)
         counter_docx+=1
     counter+=1
-    progress(counter)
+    progress(counter,total_files)
     
 
 #Going through each file in the directory to unpack
-#[extract(root,file) for root, dirs, files in os.walk(directory) for file in files if file.endswith((".zip",".rar")) ]#map(str.upper,os.walk(directory))
-#print(all_files)
+[extract(root,file) for root, dirs, files in os.walk(directory) for file in files if file.endswith((".zip",".rar")) ]#map(str.upper,os.walk(directory))
 
-[check(root,file)  for root, dirs, files in os.walk(directory) for file in files if file.endswith((".txt",".pdf",".xlsx",".pptx",".docx"))]
+total_files=[file if file.endswith((".txt",".pdf",".xlsx",".pptx",".docx")) else other(files) for root, dirs, files in os.walk(directory) for file in files ]
+
+[check(root,file,len(total_files))  for root, dirs, files in os.walk(directory) for file in files if file.endswith((".txt",".pdf",".xlsx",".pptx",".docx"))]
 print("\n")
 [print(r) for r in final]
-"""
-if 'out_zip' in locals() :
-    ans = input('Do you want to remove all the files that were extracted from compressed directories?   y/n?')
-    if ans.lower() =='y':
-        shutil.rmtree(out_zip)
-        shutil.rmtree(out_rar)
-"""
+
 executionTime = (time.time() - startTime)
 print('Execution time in seconds: ' + str(executionTime))
 
-"""
-log_path=os.path.join(directory, "search_log")
-if not os.path.exists(log_path):
-    os.makedirs(log_path)
+if out_zip !='' and os.path.exists(out_zip) ==True:
+    ans = input('Do you want to remove all the files that were extracted from compressed directories?   y/n?')
+    if ans.lower() =='y':
+        shutil.rmtree(out_zip)
+        
+if args.save_log is not None:
+    log_dir_path=os.path.join(directory, "search_log")
+    if not os.path.exists(log_dir_path):
+        os.makedirs(log_dir_path)
 
-now = datetime.datetime.now()
+    now = datetime.datetime.now()
+    log_path=os.path.join(log_dir_path, now.strftime('%Y_%m_%d__%H_%M_%S')+" search file log for "+text+".txt")
+    with open(log_path,"w") as logtxt:
+        log_data=[logsize(root,file) for root, dirs, files in os.walk(directory) for file in files if file.endswith((".txt",".pdf",".xlsx",".pptx",".docx")) ]
+        logtxt.write(f"Total text files {counter_txt}\nTotal pdf files {counter_pdf}\nTotal docx files {counter_docx}\nTotal xlsx files {counter_xlsx}\nTotal pptx files {counter_pptx}\n")
+        x=[len(dirs) for root, dirs, files in os.walk(directory)]
+        logtxt.write(f"Total directories {x[0]}\n")
+        logtxt.write(f"Total files that are not searched {counter_otherfiles}\n")
+        for data in log_data:
+            logtxt.write(data+"\n")
+    
 
-#[logsize(root,file) for root, dirs, files in os.walk(directory) for file in files if file.endswith((".txt",".pdf",".xlsx",".pptx",".docx")) ]
-#print("Total text files {txtf}\nTotal pdf files {pdff}\nTotal docx files {docxf}\nTotal xlsx files {xlsxf}\nTotal pptx files {pptxf}".format(txtf=counter_txt,pdff=counter_pdf,docxf=counter_docx,xlsxf=counter_xlsx,pptxf=counter_pptx))
-#x=[len(dirs) for root, dirs, files in os.walk(directory)]
-#print("Total directories {size}".format(size=x[0]))
-with open(now.strftime('%Y_%m_%d__%H_%M_%S')+" search file log for "+text,"w") as logtxt:
-    logtxt.write()
-
-"""
