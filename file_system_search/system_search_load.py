@@ -105,12 +105,13 @@ def check(root,file,total_files):
     if file.endswith(".pptx"):
         file_path=os.path.join(root, file)
         data=''
-        prs = Presentation(file_path)
-        values=[shape.text for slide in prs.slides for shape in slide.shapes if hasattr(shape, "text")]
-        data=' '.join(values)
-        result=re.findall(text,data)
-        if result:
-            final.append(result[0]+" in file "+file)
+        with open(file_path, 'rb') as f:
+            prs = Presentation(f)
+            values=[shape.text for slide in prs.slides for shape in slide.shapes if hasattr(shape, "text")]
+            data=' '.join(values)
+            result=re.findall(text,data)
+            if result:
+                final.append(result[0]+" in file "+file)
         counter_pptx+=1
 
     if file.endswith(".docx"):
