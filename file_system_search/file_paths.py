@@ -6,6 +6,9 @@ import time
 from docx import Document
 from pathlib import Path
 from time import sleep
+import pandas as pd
+import numpy as np
+"""
 directory =r"G:\My Drive\Head Start Academy\Scripts\Github data\pylinux\file_system_search\FILE_JUNGLE"
 totalsize=0
 def logsize(root,file):
@@ -17,7 +20,7 @@ def logsize(root,file):
 
 [(logsize(root,file)) for root, dirs, files in os.walk(directory) for file in files if file.endswith((".txt",".pdf",".xlsx",".pptx",".docx")) ]
 print("{size:.2f} MB".format(size=totalsize/(1024**3)))
-"""
+
 directory =r"G:\My Drive\Head Start Academy\Scripts\Github data\pylinux\file_system_search\FILE_JUNGLE"
 counter=0
 def check(root,file):
@@ -38,3 +41,10 @@ def check(root,file):
 executionTime = (time.time() - startTime)
 print('Execution time in seconds: ' + str(executionTime))
 """
+
+df = pd.read_excel(r"G:\My Drive\Head Start Academy\Scripts\Github data\pylinux\file_system_search\FILE_JUNGLE\temp.xlsx")            
+mask = np.column_stack([df[col].astype(str).str.contains(r"vcc.+", na=False) for col in df])
+indices = np.argwhere(mask)
+if len(indices)>0:
+    print("yes")
+print(len(indices))
