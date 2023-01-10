@@ -2,17 +2,34 @@
 #It searches for a string within popular document types: office, pdf, archives
 
 import os,re
-import fitz
-import pandas as pd
-import numpy as np
-from pptx import Presentation
-from docx import Document
-import argparse
-from zipfile import ZipFile
-from rarfile import RarFile
 import time
 import datetime
+import argparse
 import shutil
+
+try:
+    import fitz
+    import pandas as pd
+    import numpy as np
+    from pptx import Presentation
+    from docx import Document
+    from zipfile import ZipFile
+    from rarfile import RarFile
+    import shutil
+except ModuleNotFoundError:
+    install = input("Requirments not found on computer, would you like to install them automatically? Y/N\n>>> ")
+    if install.lower() == 'y':
+        os.system("pip install fitz")
+        os.system("pip install pandas")
+        os.system("pip install numpy")
+        os.system("pip install pptx")
+        os.system("pip install docx")
+        os.system("pip install zipfile39")
+        os.system("pip install rarfile")
+
+
+
+
 
 startTime = time.time()
 counter,totalsize,counter_txt,counter_pdf,counter_docx,counter_xlsx,counter_pptx,counter_totalfiles,counter_otherfiles,count_not=0,0,0,0,0,0,0,0,0,0
@@ -25,7 +42,9 @@ parser = argparse.ArgumentParser(prog="system_search_load.py")
 parser.add_argument('-path', '--source_path', help="Takes the directory path in quotes as input")
 parser.add_argument('-text', '--text_pattern', help="Takes the text pattern as input")
 parser.add_argument('save', nargs='?', help="Saves a log file in a folder")
-
+# option for verbose output (default False)
+# option to save all matching files ---at the end once the results are printed
+#alternative print path to each file
 args = parser.parse_args()
 
 #Assigning variables and adding regular expression for the text
