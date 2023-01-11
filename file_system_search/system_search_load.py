@@ -2,20 +2,37 @@
 #It searches for a string within popular document types: office, pdf, archives
 
 import os,re
-import fitz
-import pandas as pd
-import numpy as np
-from pptx import Presentation
-from docx import Document
-import argparse
-from zipfile import ZipFile
-from rarfile import RarFile
 import time
 import datetime
+import argparse
 import shutil
 
+try:
+    import fitz
+    import pandas as pd
+    import numpy as np
+    from pptx import Presentation
+    from docx import Document
+    from zipfile import ZipFile
+    from rarfile import RarFile
+    import shutil
+except ModuleNotFoundError:
+    install = input("Requirments not found on computer, would you like to install them automatically? Y/N\n>>> ")
+    if install.lower() == 'y':
+        os.system("pip install pymupdf")
+        os.system("pip install pandas")
+        os.system("pip install numpy")
+        os.system("pip install pptx")
+        os.system("pip install docx")
+        os.system("pip install zipfile39")
+        os.system("pip install rarfile")
+
+
+
+
+
 startTime = time.time()
-counter,totalsize,counter_txt,counter_pdf,counter_docx,counter_xlsx,counter_pptx,counter_totalfiles,counter_otherfiles,count_not=0,0,0,0,0,0,0,0,0,0
+counter,totalsize,counter_txt,counter_pdf,counter_docx,counter_xlsx,counter_pptx,counter_totalfiles,counter_otherfiles,count_not,searchsize=0,0,0,0,0,0,0,0,0,0,0
 final=list()
 out_zip=''
 not_searched=[]
@@ -38,7 +55,11 @@ def logsize(root,file):
     size=os.path.getsize(os.path.join(root, file))
     totalsize+=size
     return "{f} | {size} | Bytes".format(f=file,size=size)
-    
+
+def getsize(root,file):
+    size=os.path.getsize(os.path.join(root, file))
+    return "{size} | Bytes".format(size=size)
+
 def other(file):
     global counter_otherfiles
     counter_otherfiles+=1
@@ -74,7 +95,7 @@ def extract(root,file):
         print(e)
     
 def check(root,file,total_files):
-    global counter,counter_txt,counter_pdf,counter_docx,counter_xlsx,counter_pptx,count_not,not_searched
+    global counter,counter_txt,counter_pdf,counter_docx,counter_xlsx,counter_pptx,count_not,not_searched,searchsize
     
     try:
     
@@ -86,7 +107,8 @@ def check(root,file,total_files):
                 data+=f.read()
                 result=re.findall(text,data)
                 if  result:
-                    final.append(result[0]+"in file"+file)
+                    final.append([result[0],file_path,getsize(root,file)])
+            
             counter_txt+=1
               
         if file.endswith(".pdf"):
@@ -97,7 +119,7 @@ def check(root,file,total_files):
                 data+=page.get_text()
             result=re.findall(text,data)
             if result:
-                final.append(result[0]+" in file "+file)
+                final.append([result[0],file_path,getsize(root,file)])
             counter_pdf+=1
     
         if file.endswith(".xlsx"):
@@ -119,7 +141,7 @@ def check(root,file,total_files):
             data=' '.join(values)
             result=re.findall(text,data)
             if result:
-                final.append(result[0]+" in file "+file)
+                final.append([result[0],file_path,getsize(root,file)])
             counter_pptx+=1
     
         if file.endswith(".docx"):
@@ -131,8 +153,9 @@ def check(root,file,total_files):
                 data += '\n'+ para.text
             result=re.findall(text,data)
             if result:
-                final.append(result[0]+" in file "+file)
+                final.append([result[0],file_path,getsize(root,file)])
             counter_docx+=1
+        searchsize+=os.path.getsize(os.path.join(root, file))
         counter+=1
     except Exception as e:
         osize=os.path.getsize(os.path.join(root, file))
@@ -153,7 +176,8 @@ def check(root,file,total_files):
 
 [check(root,file,counter_totalfiles)  for root, dirs, files in os.walk(directory) for file in files if file.endswith((".txt",".pdf",".xlsx",".pptx",".docx")) and not file.startswith("~$")]
 print("\n")
-[print(r) for r in final]
+[print(value) for values in final for value in values]
+                    
 
 executionTime = (time.time() - startTime)
 print('Execution time in seconds: ' + str(executionTime))
@@ -170,21 +194,30 @@ if args.save is not None:
 
     now = datetime.datetime.now()
     log_path=os.path.join(log_dir_path, now.strftime('%Y_%m_%d__%H_%M_%S')+" search file log for "+text+".txt")
-    with open(log_path,"w") as logtxt:
+    with open(log_path,"w", encoding="utf-8") as logtxt:
+        total=0
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                total+=os.path.getsize(os.path.join(root, file))    
+
         log_data=[logsize(root,file) for root, dirs, files in os.walk(directory) for file in files if file.endswith((".txt",".pdf",".xlsx",".pptx",".docx")) and not file.startswith("~$") ]
         logtxt.write("Numeric logs: \n\n")
-        logtxt.write(f"Total text files {counter_txt}\nTotal pdf files {counter_pdf}\nTotal docx files {counter_docx}\nTotal xlsx files {counter_xlsx}\nTotal pptx files {counter_pptx}\nTotal files size {totalsize/2048:2f}\n")
+        logtxt.write(f"Total text files: {counter_txt}\nTotal pdf files: {counter_pdf}\nTotal docx files: {counter_docx}\nTotal xlsx files: {counter_xlsx}\nTotal pptx files: {counter_pptx}\n")
+        logtxt.write("Total files size :{size} MB\n".format(size=round(total/1024**2,3)))
         x=[len(dirs) for root, dirs, files in os.walk(directory)]
-        logtxt.write(f"Total directories {x[0]}\n")
-        logtxt.write(f"Total files that are not searched {counter_otherfiles}\n")
-        logtxt.write('Execution time in seconds: ' + str(executionTime)+"\n\n")
-        logtxt.write("RESULT\n\n")
+        logtxt.write(f"Total directories: {x[0]}\n")
+        logtxt.write(f"Total files that are not searched: {counter_otherfiles}\n")
+        logtxt.write("Total searched files size: {ssize} MB\n".format(ssize=round(totalsize/1024**2,3)))
+        logtxt.write('Execution time in seconds: ' + str(executionTime)+" seconds\n\n")
+        logtxt.write("RESULT of searched text\n\n")
         if not final:
             logtxt.write('Did not find any text in files \n\n')
         else:
-            for r in final:
-                logtxt.write(r)
-        logtxt.write('Listed failed searched files and thier reason: \n\n')
+            for values in final:
+                for value in values:
+                    logtxt.write(value+"\n")
+        logtxt.write("\n\n")
+        logtxt.write('ENCOUNTERERED files and thier reason: \n\n')
         for val in not_searched:
             logtxt.write(val+"\n")
         logtxt.write("\n")
